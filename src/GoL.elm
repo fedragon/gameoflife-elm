@@ -1,3 +1,5 @@
+module GoL exposing (aliveNeighboursOf)
+
 import Cell
 import Html exposing (Html, button, div, span, text)
 import Html.App as App
@@ -67,7 +69,7 @@ aliveNeighboursOf cell cells =
       (cell.x + 1, cell.y + 1)]
     valid =
       List.filter
-        (\(x, y) -> x > 0 && y > 0)
+        (\(x, y) -> x >= 0 && y >= 0)
       adjacent
   in
     List.filter
