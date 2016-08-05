@@ -1,6 +1,7 @@
-module GoL exposing (aliveNeighboursOf)
-
+import Board
 import Cell
+
+import Dict
 import Html exposing (Html, button, div, span, text)
 import Html.App as App
 import Html.Events exposing (onClick)
@@ -11,7 +12,7 @@ import Time exposing (Time, every, millisecond)
 
 type alias Model =
   { generation : Int
-  , cells : List Cell.Model
+  , board : Board.Model
   , paused : Bool
   }
 
@@ -42,51 +43,12 @@ raiseFromTheDead total boardSide =
 init : (Model, Cmd Msg)
 init =
   let
-    boardSide = 30
-    cellSize = 15
+    boardSide = 50
+    cellSize = 10
     initiallyAlive = boardSide * 3
-    board =
-      List.concatMap
-        (\x ->
-          List.map
-            (\y -> (Cell.init x y cellSize False))
-            [0..boardSide])
-        [0..boardSide]
+    board = Board.init boardSide cellSize
   in
     (Model 0 board True, raiseFromTheDead initiallyAlive boardSide)
-
-aliveNeighboursOf : Cell.Model -> List Cell.Model -> List Cell.Model
-aliveNeighboursOf cell cells =
-  let
-    adjacent = [
-      (cell.x - 1, cell.y - 1),
-      (cell.x    , cell.y - 1),
-      (cell.x + 1, cell.y - 1),
-      (cell.x - 1, cell.y),
-      (cell.x + 1, cell.y),
-      (cell.x - 1, cell.y + 1),
-      (cell.x    , cell.y + 1),
-      (cell.x + 1, cell.y + 1)]
-    valid =
-      List.filter
-        (\(x, y) -> x >= 0 && y >= 0)
-      adjacent
-  in
-    List.filter
-      (\c -> c.alive && (List.member (c.x, c.y) valid))
-      cells
-
-updateCell : Cell.Model -> List Cell.Model -> Cell.Model
-updateCell cell cells =
-  let
-    neighbours = aliveNeighboursOf cell cells
-  in
-    (Cell.update (Cell.Evolve neighbours) cell)
-
-shouldBeBorn cell reborn =
-  List.member
-    (cell.x, cell.y)
-    reborn
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -97,23 +59,17 @@ update msg model =
       init
     RaiseFromTheDead reborn ->
       ({ model |
-        cells =
-          List.map
-            (\cell ->
-              if (shouldBeBorn cell reborn) then
-                { cell | alive = True }
-              else cell)
-            model.cells,
-            paused = False
-          }, Cmd.none)
+        board = (Board.makeAlive reborn model.board),
+        paused = False },
+        Cmd.none)
     NextGen _ ->
       ({ model | generation = model.generation + 1
-       , cells = List.map (\cell -> (updateCell cell model.cells)) model.cells
-       }, Cmd.none)
+       , board = Board.update model.board },
+       Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  if (model.paused || List.all (\x -> not x.alive) model.cells) then
+  if (model.paused) then
     Sub.none
   else
     Time.every (250 * millisecond) NextGen
@@ -125,5 +81,5 @@ view model =
     button [onClick Pause] [text (if (model.paused) then "Resume" else "Pause")],
     button [onClick Restart] [text "Restart"],
     svg [ viewBox "0 0 600 600", height "600px", width "600px" ]
-      (List.map Cell.view model.cells)
+      (List.map Cell.view (Dict.values model.board))
   ]
