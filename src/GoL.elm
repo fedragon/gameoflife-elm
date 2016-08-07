@@ -57,9 +57,9 @@ update msg model =
       ({ model | paused = (not model.paused) }, Cmd.none)
     Restart ->
       init
-    RaiseFromTheDead reborn ->
+    RaiseFromTheDead these ->
       ({ model |
-        board = (Board.makeAlive reborn model.board),
+        board = (Board.makeAlive these model.board),
         paused = False },
         Cmd.none)
     NextGen _ ->

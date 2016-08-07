@@ -20,10 +20,10 @@ init boardSide cellSize =
 
 
 makeAlive : List (Int, Int) -> Model -> Model
-makeAlive reborn board =
+makeAlive these board =
   Dict.map
     (\k cell ->
-      if (List.member k reborn) then
+      if (List.member k these) then
         { cell | alive = True }
       else cell)
     board
