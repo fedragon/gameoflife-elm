@@ -32,7 +32,7 @@ update msg model =
         n ->
           case (List.length n) of
             2 -> survive model
-            3 -> reproduce model
+            3 -> if (model.alive) then (survive model) else (reproduce model)
             _ -> die model -- overcrowded
 
 view : Model -> Svg a
