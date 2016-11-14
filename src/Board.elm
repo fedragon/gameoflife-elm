@@ -15,9 +15,8 @@ init boardSide cellSize =
       (\x ->
         List.map
           (\y -> ((x, y), (Cell.init x y cellSize False)))
-          [0..boardSide])
-      [0..boardSide])
-
+          (List.range 0 boardSide))
+      (List.range 0 boardSide))
 
 makeAlive : List (Int, Int) -> Model -> Model
 makeAlive these board =

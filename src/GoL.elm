@@ -3,7 +3,6 @@ import Cell
 
 import Dict
 import Html exposing (Html, button, div, span, text)
-import Html.App as App
 import Html.Events exposing (onClick)
 import Random
 import Svg exposing (svg)
@@ -23,7 +22,7 @@ type Msg =
   | RaiseFromTheDead (List (Int, Int))
 
 main =
-  App.program {
+  Html.program {
     init = init,
     update = update,
     subscriptions = subscriptions,
