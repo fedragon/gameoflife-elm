@@ -14,7 +14,7 @@ init boardSide cellSize =
     List.concatMap
       (\x ->
         List.map
-          (\y -> ((x, y), (Cell.init x y cellSize False)))
+          (\y -> ((x, y), (Cell.init x y cellSize)))
           (List.range 0 boardSide))
       (List.range 0 boardSide))
 
@@ -23,7 +23,7 @@ makeAlive these board =
   Dict.map
     (\k cell ->
       if (List.member k these) then
-        { cell | alive = True }
+        (Cell.update Cell.Resurrect cell)
       else cell)
     board
 

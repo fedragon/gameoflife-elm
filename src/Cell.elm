@@ -1,4 +1,4 @@
-module Cell exposing (Model, Msg(Evolve), init, update, view)
+module Cell exposing (Model, Msg(Evolve, Resurrect), init, update, view)
 
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
@@ -10,10 +10,12 @@ type alias Model =
   , alive : Bool
   }
 
-init x y z alive =
-  Model x y z alive
+init x y z =
+  Model x y z False
 
-type Msg = Evolve (List Model)
+type Msg =
+  Resurrect
+  | Evolve (List Model)
 
 reproduce model = { model | alive = True }
 
@@ -25,6 +27,8 @@ survive model = model
 update : Msg -> Model -> Model
 update msg model =
   case msg of
+    Resurrect ->
+      reproduce model
     Evolve neighbours ->
       case neighbours of
         [] -> die model -- undercrowded
