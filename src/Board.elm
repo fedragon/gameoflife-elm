@@ -18,13 +18,13 @@ init boardSide cellSize =
           (List.range 0 boardSide))
       (List.range 0 boardSide))
 
-makeAlive : List (Int, Int) -> Model -> Model
+makeAlive : Dict (Int, Int) Int -> Model -> Model
 makeAlive these board =
   Dict.map
-    (\k cell ->
-      if (List.member k these) then
-        (Cell.update Cell.Resurrect cell)
-      else cell)
+    (\coords cell ->
+      Dict.get coords these
+      |> Maybe.map (\color -> Cell.update (Cell.Resurrect color) cell)
+      |> Maybe.withDefault cell)
     board
 
 update : Model -> Model
