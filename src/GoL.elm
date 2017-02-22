@@ -1,7 +1,7 @@
 import Board
 import Cell
 
-import Dict exposing (Dict)
+import Dict
 import Html exposing (Html, button, div, span, text)
 import Html.Events exposing (onClick)
 import Random
@@ -19,7 +19,7 @@ type Msg =
   NextGen Time
   | Restart
   | Pause
-  | RaiseFromTheDead (Dict (Int, Int) Int)
+  | RaiseFromTheDead (List (Int, Int))
 
 main =
   Html.program {
