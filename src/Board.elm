@@ -1,5 +1,6 @@
 module Board exposing (..)
 
+import Array exposing (Array)
 import Dict exposing (Dict)
 import Cell
 
@@ -8,13 +9,17 @@ type alias Model = Dict (Int, Int) Cell.Model
 empty : Model
 empty = Dict.empty
 
-init : Int -> Int -> Model
-init boardSide cellSize =
+init : Int -> Int -> Array Int -> Model
+init boardSide cellSize colours =
   Dict.fromList(
     List.concatMap
       (\x ->
         List.map
-          (\y -> ((x, y), (Cell.init x y cellSize)))
+          (\y ->
+            let
+              colour = Array.get (x * boardSide + y) colours |> Maybe.withDefault 0
+            in
+              ((x, y), (Cell.init x y cellSize colour)))
           (List.range 0 boardSide))
       (List.range 0 boardSide))
 

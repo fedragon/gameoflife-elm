@@ -1,6 +1,7 @@
 import Board
 import Cell
 
+import Array exposing (Array)
 import Dict
 import Html exposing (Html, button, div, span, text)
 import Html.Events exposing (onClick)
@@ -11,6 +12,7 @@ import Time exposing (Time, every, millisecond)
 
 type alias Model =
   { generation : Int
+  , boardSide : Int
   , board : Board.Model
   , paused : Bool
   }
@@ -19,6 +21,7 @@ type Msg =
   NextGen Time
   | Restart
   | Pause
+  | GenerateColours (List Int)
   | RaiseFromTheDead (List (Int, Int))
 
 main =
@@ -39,19 +42,30 @@ raiseFromTheDead total boardSide =
         (Random.int 1 boardSide)
         (Random.int 1 boardSide)))
 
+generateColours : Int -> Cmd Msg
+generateColours total =
+  Random.generate
+    GenerateColours
+    (Random.list total (Random.int 0 3))
+
 init : (Model, Cmd Msg)
 init =
   let
     boardSide = 50
-    cellSize = 10
-    initiallyAlive = boardSide * 3
-    board = Board.init boardSide cellSize
   in
-    (Model 0 board True, raiseFromTheDead initiallyAlive boardSide)
+    (Model 0 boardSide Board.empty True, generateColours (boardSide * boardSide))
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    GenerateColours colours ->
+      let
+        cellSize = 10
+        initiallyAlive = model.boardSide * 4
+      in
+        ({ model |
+          board = Board.init model.boardSide cellSize (Array.fromList colours) },
+          raiseFromTheDead initiallyAlive model.boardSide)
     Pause ->
       ({ model | paused = (not model.paused) }, Cmd.none)
     Restart ->
