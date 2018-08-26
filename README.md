@@ -6,7 +6,7 @@ Exploring [Elm](elm-lang.org) by implementing [Conway's Game of Life](https://en
 
 Run
 
-    elm reactor -a=localhost
+    elm reactor
 
 and then go to [http://localhost:8000/src/GoL.elm](http://localhost:8000/src/GoL.elm)
 
